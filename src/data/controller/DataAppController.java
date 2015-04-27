@@ -1,13 +1,8 @@
 package data.controller;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Scanner;
-
 import data.controller.DataController;
-import data.model.Data;
+import data.model.QueryInfo;
 import data.view.DataFrame;
 
 
@@ -18,14 +13,14 @@ import data.view.DataFrame;
 	{
 		private DataFrame appFrame;
 		private DataController data;
-		private ArrayList<Data> timingInfoList;
+		private ArrayList<QueryInfo> queryList;
 		/*
 		 * states the data and appframe
 		 */
 		public DataAppController()
 		{
-			timingInfoList = new ArrayList<Data>();
-			data = new DataController(this);
+			queryList = new ArrayList<QueryInfo>();
+			data = new DataController(this, data);
 			appFrame = new DataFrame(this);
 		}
 
@@ -39,48 +34,6 @@ import data.view.DataFrame;
 			
 		}
 		
-		public void start()
-		{
-			loadTimingInfo();
-		}
-		
-		public ArrayList<Data>getTimingInfoLIst()
-		{
-			return timingInfoList;
-		}
-		
-		public void loadTimingInfo()
-		{
-			File saveFile = new File("save.txt");
-			try
-			{
-				Scanner readFileScanner;
-				if(saveFile.exists())
-				{
-					timingInfoList.clear();
-					readFileScanner = new Scanner(saveFile);
-					while(readFileScanner.hasNext())
-					{
-						String tempQuery = readFileScanner.next();
-						long tempTime = readFileScanner.nextLong();
-						readFileScanner.next();
-						timingInfoList.add(new Data(tempQuery, tempTime));
-					}
-					
-					readFileScanner.close();
-				}
-				
-			}
-			catch(IOException current)
-			{
-				this.getData().displayErrors(current);
-			}
-		}
-		
-		public void saveQueryTimeingInfo()
-		{
-			
-		}
 		
 		
 		/*
@@ -92,6 +45,21 @@ import data.view.DataFrame;
 		}
 
 		public void saveQueryTimingInfo()
+		{
+			// TODO Auto-generated method stub
+			
+		}
+		public DataController getDatabase()
+		{
+			return data;
+		}
+		
+		public ArrayList<QueryInfo> getQueryList()
+		{
+			return queryList;
+		}
+
+		public void start()
 		{
 			// TODO Auto-generated method stub
 			

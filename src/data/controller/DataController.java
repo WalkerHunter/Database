@@ -4,16 +4,17 @@ package data.controller;
  * @Author Walker Hunter 
  */
 
-import java.awt.Component;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-import data.model.Data;
+import data.model.QueryInfo;
 import data.view.DataFrame;
 
 public class DataController
@@ -21,25 +22,51 @@ public class DataController
 	private String connectionString;
 	private Connection dataConnection;
 	private DataController baseController;
+	private String currentQuery;
 
-	public DataController(DataAppController basecontroller)
+	/**
+	 * Declares objects and loads object
+	 * @param baseController 
+	 */
+	public DataController(DataAppController basecontroller, DataController baseController)
 	{
-		connectionString = "jdbc:mysql://127.0.0.1/?user=root";
+		connectionString = "jdbc:mysql://127.0.0.1/games?user=root";//gets
+																			//the
+																			//database
+																			//address		
 		this.baseController = baseController;
 		checkDriver();
 		setupConnection();
 		
 	}
 	
+	/**
+	 * Change connection string so we are able to talk to other databases
+	 * 
+	 * @param pathToDBServer
+	 *            path to the database server
+	 * @param databaseName
+	 *            name of the database
+	 * @param userName
+	 *            user name for the database server
+	 * @param password
+	 *            password for the database server
+	 */
 	public void connectionStringBuilder(String pathToDBServer, String databaseName, String userName, String password)
 	{
-		connectionString = "jdbc:mysql://";
+		connectionString = "jdbc:mysql://";// wipes out connection string,
+											// starts new
 		connectionString += pathToDBServer;
 		connectionString += "/" + databaseName;
-		connectionString += "?user=" + userName;
+		connectionString += "?user=" + userName;// "?" = end of path, sends it
+												// to program at end of path
 		connectionString += "&password=" + password;
 	}
 	
+	public void submitQuery(String tableName)
+	{
+
+	}
 	
 	/**
 	 * Looks for the jbc
@@ -159,6 +186,149 @@ public class DataController
 		}
 		
 		return rowsAffected;
+	}
+	
+	/**
+	 * Checks if there is a structure violation
+	 * 
+	 * @return if there is a structure violation
+	 */
+	private boolean checkForStructureViolation()
+	{
+		if (currentQuery.toUpperCase().contains(" DATABASE "))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Method for dropping tables/indices from a database. Throws exception if
+	 * attempted
+	 * 
+	 * @throws SQLException
+	 *             when the query contains a DROP DATABASE command.
+	 */
+	public void dropStatement()
+	{
+		String results = "";
+		try
+		{
+			if (checkForStructureViolation())
+			{
+				throw new SQLException("You dropped the database.", "Try again.", Integer.MIN_VALUE);
+			}
+
+			if (currentQuery.toUpperCase().contains("INDEX"))
+			{
+				results = "The index was: ";
+			}
+			else
+			{
+				results = "The table was: ";
+			}
+
+			Statement dropStatement = dataConnection.createStatement();
+			int affected = dropStatement.executeUpdate(currentQuery);
+
+			dropStatement.close();
+
+			if (affected == 0)
+			{
+				results += "dropped";
+			}
+
+			JOptionPane.showMessageDialog(baseController.getAppFrame(), results);
+		}
+		catch (SQLException dropError)
+		{
+			displayErrors(dropError);
+		}
+
+	}
+	
+	public String[] getDatabaseColumnNames(String tableName)
+	{
+		String[] columns;
+		currentQuery = "SELECT * FROM `" + tableName + "`";
+		long startTime, endTime;
+		startTime = System.currentTimeMillis();
+
+		try
+		{
+			Statement firstStatement = dataConnection.createStatement();
+			ResultSet answers = firstStatement.executeQuery(currentQuery);
+			ResultSetMetaData answerData = answers.getMetaData();
+
+			columns = new String[answerData.getColumnCount()];
+
+			for (int column = 0; column < answerData.getColumnCount(); column++)
+			{
+				columns[column] = answerData.getColumnName(column + 1);
+			}
+
+			answers.close();
+			firstStatement.close();
+			endTime = System.currentTimeMillis();
+
+		}
+		catch (SQLException currentException)
+		{
+			endTime = System.currentTimeMillis();
+			columns = new String[] { "empty" };
+			displayErrors(currentException);
+		}
+
+		long queryTime = endTime - startTime;
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
+		return columns;
+	}
+	public ArrayList<QueryInfo> getQueryList()
+	{
+		return getQueryList();
+	}
+	
+
+	public String[] getMetaData()
+	{
+		String[] columnInformation;
+
+		try
+		{
+			Statement firstStatement = dataConnection.createStatement();
+			ResultSet answer = firstStatement.executeQuery(currentQuery);
+			ResultSetMetaData myMeta = answer.getMetaData();
+
+			columnInformation = new String[myMeta.getColumnCount()];
+
+			for (int index = 0; index < myMeta.getColumnCount(); index++)
+			{
+				columnInformation[index] = myMeta.getColumnName(index + 1);
+			}
+
+			answer.close();
+			firstStatement.close();
+
+		}
+		catch (SQLException currentException)
+		{
+			columnInformation = new String[] { "nada exists" };
+			displayErrors(currentException);
+		}
+		return columnInformation;
+	}
+
+	public String[][] realInfo()
+	{
+		return null;
+	}
+
+	public String[][] tableInfo()
+	{
+		return null;
 	}
 	
 	/*

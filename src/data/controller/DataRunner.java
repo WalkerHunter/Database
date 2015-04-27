@@ -1,7 +1,5 @@
 package data.controller;
 
-import data.controller.DataController;
-
 /**
  * starts and runs the program
  * @author whun6698
