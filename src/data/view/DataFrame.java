@@ -59,7 +59,7 @@ import data.view.DataPanel;
 
 				public void windowClosing(WindowEvent arg0)
 				{
-					baseController.saveQueryTimingInfo();
+					baseController.saveTimingInformation();
 					
 				}
 

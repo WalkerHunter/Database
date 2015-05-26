@@ -21,23 +21,26 @@ public class DataController
 {
 	private String connectionString;
 	private Connection dataConnection;
-	private DataController baseController;
+	private DataAppController baseController;
 	private String currentQuery;
+	long startTime, endTime;
 
 	/**
 	 * Declares objects and loads object
 	 * @param baseController 
+	 * @param baseController 
 	 */
-	public DataController(DataAppController basecontroller, DataController baseController)
+	public DataController(DataAppController baseController)
 	{
-		connectionString = "jdbc:mysql://127.0.0.1/games?user=root";//gets
+		this.connectionString = "jdbc:mysql://127.0.0.1/games?user=root";//gets
 																			//the
 																			//database
 																			//address		
 		this.baseController = baseController;
 		checkDriver();
 		setupConnection();
-		
+		long queryTime = endTime - startTime;
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
 	}
 	
 	/**
@@ -61,6 +64,8 @@ public class DataController
 		connectionString += "?user=" + userName;// "?" = end of path, sends it
 												// to program at end of path
 		connectionString += "&password=" + password;
+		long queryTime = endTime - startTime;
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
 	}
 	
 	public void submitQuery(String tableName)
@@ -69,36 +74,41 @@ public class DataController
 	}
 	
 	/**
-	 * Looks for the jbc
+	 * Looks for the jdbc
 	 * Looks for errors and exits
 	 */
 	private void checkDriver()
 	{
 		try
 		{
-			Class.forName("com.mysql.jbc.Driver");
+			Class.forName("com.mysql.jdbc.Driver");
 		}
 		catch(Exception currentException)
 		{
 			displayErrors(currentException);
 			System.exit(1);
 		}
+		long queryTime = endTime - startTime;
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
 	}
 	
 	/*
 	 * closes connection
 	 * displays any errors that occur
 	 */
+	
 	public void closeConnection()
 	{
 		try
 		{
 			dataConnection.close();
 		}
-		catch (SQLException error)
+		catch (SQLException currentException)
 		{
-			displayErrors(error);
+			displayErrors(currentException);
 		}
+		long queryTime = endTime - startTime;
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
 	}
 	
 	/**
@@ -115,8 +125,10 @@ public class DataController
 		{
 			displayErrors(currentException);
 		}
+		long queryTime = endTime - startTime;
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
 	}
-	
+
 	
 	/**
 	 * displays errors
@@ -125,12 +137,13 @@ public class DataController
 	public void displayErrors(Exception currentException)
 	{
 		JOptionPane.showMessageDialog(baseController.getAppFrame(), currentException.getMessage());
-		
 		if(currentException instanceof SQLException)
 		{
 			JOptionPane.showMessageDialog(baseController.getAppFrame(), "SQL State: " + ((SQLException) currentException).getSQLState());
 			JOptionPane.showMessageDialog(baseController.getAppFrame(), "SQL Error Code: " + ((SQLException) currentException).getErrorCode());
 		}
+		long queryTime = endTime - startTime;
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
 	}
 
 	/*
@@ -158,7 +171,8 @@ public class DataController
 		{
 			displayErrors(currentSQLError);
 		}
-		
+		long queryTime = endTime - startTime;
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
 		return results;
 	}
 	
@@ -184,7 +198,8 @@ public class DataController
 			displayErrors(currentSQLError);
 			
 		}
-		
+		long queryTime = endTime - startTime;
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
 		return rowsAffected;
 	}
 	
@@ -203,6 +218,7 @@ public class DataController
 		{
 			return false;
 		}
+		
 	}
 	
 	/**
@@ -247,6 +263,8 @@ public class DataController
 		{
 			displayErrors(dropError);
 		}
+		long queryTime = endTime - startTime;
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
 
 	}
 	
@@ -288,6 +306,8 @@ public class DataController
 	}
 	public ArrayList<QueryInfo> getQueryList()
 	{
+		long queryTime = endTime - startTime;
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
 		return getQueryList();
 	}
 	
@@ -318,16 +338,22 @@ public class DataController
 			columnInformation = new String[] { "nada exists" };
 			displayErrors(currentException);
 		}
+		long queryTime = endTime - startTime;
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
 		return columnInformation;
 	}
 
 	public String[][] realInfo()
 	{
+		long queryTime = endTime - startTime;
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
 		return null;
 	}
 
 	public String[][] tableInfo()
 	{
+		long queryTime = endTime - startTime;
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
 		return null;
 	}
 	
@@ -355,50 +381,24 @@ public class DataController
 		{
 			displayErrors(currentSQLError);
 		}
+		long queryTime = endTime - startTime;
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
 		
 		return results;
 	}
 	
 	public DataFrame getAppFrame()
 	{
+		long queryTime = endTime - startTime;
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
 		return getAppFrame();
 	}
 	
-	public int partition(int arr[], int left, int right)
-	{
-	      int i = left, j = right;
-	      int tmp;
-	      int pivot = arr[(left + right) / 2];
-	     
-	      while (i <= j) {
-	            while (arr[i] < pivot)
-	                  i++;
-	            while (arr[j] > pivot)
-	                  j--;
-	            if (i <= j) {
-	                  tmp = arr[i];
-	                  arr[i] = arr[j];
-	                  arr[j] = tmp;
-	                  i++;
-	                  j--;
-	            }
-	      };
-	     
-	      return i;
-	}
-	 
-	public void quickSort(int arr[], int left, int right) {
-	      int index = partition(arr, left, right);
-	      if (left < index - 1)
-	            quickSort(arr, left, index - 1);
-	      if (index < right)
-	            quickSort(arr, index, right);
-	}
+
 	
 	public void choosePivot()
 	{
 		
 	}
 	
-
 }
