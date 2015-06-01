@@ -40,7 +40,7 @@ public class DataController
 		checkDriver();
 		setupConnection();
 		long queryTime = endTime - startTime;
-		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));//Timing
 	}
 	
 	/**
@@ -65,7 +65,7 @@ public class DataController
 												// to program at end of path
 		connectionString += "&password=" + password;
 		long queryTime = endTime - startTime;
-		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));//Timing
 	}
 	
 	public void submitQuery(String tableName)
@@ -76,6 +76,7 @@ public class DataController
 	/**
 	 * Looks for the jdbc
 	 * Looks for errors and exits
+	 * if not installed, returns error, shuts down
 	 */
 	private void checkDriver()
 	{
@@ -85,48 +86,48 @@ public class DataController
 		}
 		catch(Exception currentException)
 		{
-			displayErrors(currentException);
-			System.exit(1);
+			displayErrors(currentException); //driver not loaded
+			System.exit(1); //shut down
 		}
 		long queryTime = endTime - startTime;
-		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));//Timing
 	}
 	
-	/*
+	/**
 	 * closes connection
 	 * displays any errors that occur
 	 */
 	
-	public void closeConnection()
+	public void closeConnection() //closes connection
 	{
 		try
 		{
-			dataConnection.close();
+			dataConnection.close(); //tries closing connection
 		}
-		catch (SQLException currentException)
+		catch (SQLException currentException)//checks for any errors
 		{
-			displayErrors(currentException);
+			displayErrors(currentException);//displays errors
 		}
-		long queryTime = endTime - startTime;
-		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
+		long queryTime = endTime - startTime;//timing
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));//Timing
 	}
 	
 	/**
 	 * setups the connection
 	 * displays any errors that occur
 	 */
-	private void setupConnection()
+	private void setupConnection() //sets up connection
 	{
 		try
 		{
-			dataConnection = DriverManager.getConnection(connectionString);
+			dataConnection = DriverManager.getConnection(connectionString);//goes to driver
 		}
-		catch(SQLException currentException)
+		catch(SQLException currentException)//checks for errors
 		{
-			displayErrors(currentException);
+			displayErrors(currentException);//displays errors
 		}
-		long queryTime = endTime - startTime;
-		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
+		long queryTime = endTime - startTime;//timing
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));//Timing
 	}
 
 	
@@ -134,73 +135,75 @@ public class DataController
 	 * displays errors
 	 * @param currentException
 	 */
-	public void displayErrors(Exception currentException)
+	public void displayErrors(Exception currentException)//checks and displays errors
 	{
-		JOptionPane.showMessageDialog(baseController.getAppFrame(), currentException.getMessage());
-		if(currentException instanceof SQLException)
+		JOptionPane.showMessageDialog(baseController.getAppFrame(), currentException.getMessage());//message display
+		if(currentException instanceof SQLException)//checks Exceptions
 		{
 			JOptionPane.showMessageDialog(baseController.getAppFrame(), "SQL State: " + ((SQLException) currentException).getSQLState());
 			JOptionPane.showMessageDialog(baseController.getAppFrame(), "SQL Error Code: " + ((SQLException) currentException).getErrorCode());
 		}
-		long queryTime = endTime - startTime;
-		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
+		long queryTime = endTime - startTime;//timing
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));//Timing
 	}
 
-	/*
+	/**
 	 * gets the appframe for the data base display
+	 * gets errors if any
+	 * @return results
 	 */
 	
-	public String displayTables()
+	public String displayTables()//displays data tables
 	{
 		String results = "";
 		String query = "SHOW TABLES";
 		
 		try
 		{
-				Statement firstStatement = dataConnection.createStatement();
-				ResultSet answer = firstStatement.executeQuery(query);
+				Statement firstStatement = dataConnection.createStatement(); //gets connections
+				ResultSet answer = firstStatement.executeQuery(query); //executes the query
 				while(answer.next())
 				{
-					results += answer.getString(1) + "\n";
+					results += answer.getString(1) + "\n"; //answer shrinks
 				}
 				answer.close();
 				firstStatement.close();
 				
 		}
-		catch (SQLException currentSQLError)
+		catch (SQLException currentSQLError)//checks for errors
 		{
-			displayErrors(currentSQLError);
+			displayErrors(currentSQLError);//displays errors
 		}
-		long queryTime = endTime - startTime;
-		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
-		return results;
+		long queryTime = endTime - startTime;//timing
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));//Timing
+		return results;//returns the results
 	}
 	
 	/*
-	 * A sample of the insert
-	 * @return
+	 * Describes the database tables and reports errors if any
+	 * @return results
 	 */
 	
-	public int insertSample()
+	public int insertSample()//sample insert
 	{
-		int rowsAffected = 0;
-		String insertQuery = "INSERT INTO ''.'' () VALUES();";
+		int rowsAffected = 0; //no rows affected
+		String insertQuery = "INSERT INTO ''.'' () VALUES();";//what's being inserted and its value
 		
 		try
 		{
-			Statement insertStatement = dataConnection.createStatement();
-			rowsAffected = insertStatement.executeUpdate(insertQuery);
-			insertStatement.close();
+			Statement insertStatement = dataConnection.createStatement(); //gets connection and creates statement
+			rowsAffected = insertStatement.executeUpdate(insertQuery); //checks for updates and rows affected
+			insertStatement.close();//closes insert statement
 			
 		}
-		catch(SQLException currentSQLError)
+		catch(SQLException currentSQLError)// checks for errors
 		{
-			displayErrors(currentSQLError);
+			displayErrors(currentSQLError);//displays errors
 			
 		}
-		long queryTime = endTime - startTime;
-		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
-		return rowsAffected;
+		long queryTime = endTime - startTime;//timing
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));//Timing
+		return rowsAffected; //returns rows affected
 	}
 	
 	/**
@@ -208,15 +211,15 @@ public class DataController
 	 * 
 	 * @return if there is a structure violation
 	 */
-	private boolean checkForStructureViolation()
+	private boolean checkForStructureViolation() //checks for violations
 	{
-		if (currentQuery.toUpperCase().contains(" DATABASE "))
+		if (currentQuery.toUpperCase().contains(" DATABASE ")) //searches anything with database in it
 		{
-			return true;
+			return true; //returns if true
 		}
 		else
 		{
-			return false;
+			return false;//returns if false
 		}
 		
 	}
@@ -228,147 +231,148 @@ public class DataController
 	 * @throws SQLException
 	 *             when the query contains a DROP DATABASE command.
 	 */
-	public void dropStatement()
+	public void dropStatement()//execute drops statements
 	{
 		String results = "";
 		try
 		{
-			if (checkForStructureViolation())
+			if (checkForStructureViolation())//checks for structure violations
 			{
-				throw new SQLException("You dropped the database.", "Try again.", Integer.MIN_VALUE);
+				throw new SQLException("You dropped the database.", "Try again.", Integer.MIN_VALUE); //throws the exceptions
 			}
 
-			if (currentQuery.toUpperCase().contains("INDEX"))
+			if (currentQuery.toUpperCase().contains("INDEX"))//searches for index text
 			{
-				results = "The index was: ";
+				results = "The index was: ";//return results of the search
 			}
-			else
+			else 
 			{
-				results = "The table was: ";
+				results = "The table was: ";//returns if index and database aren't searched
 			}
 
-			Statement dropStatement = dataConnection.createStatement();
-			int affected = dropStatement.executeUpdate(currentQuery);
+			Statement dropStatement = dataConnection.createStatement();//drops from table
+			int affected = dropStatement.executeUpdate(currentQuery);//updates table
 
-			dropStatement.close();
+			dropStatement.close();//clo0ses drop table
 
-			if (affected == 0)
+			if (affected == 0)//executes if nothing is affected
 			{
-				results += "dropped";
+				results += "dropped"; //Returns the dropped
 			}
 
 			JOptionPane.showMessageDialog(baseController.getAppFrame(), results);
 		}
-		catch (SQLException dropError)
+		catch (SQLException dropError)// checks for errors
 		{
-			displayErrors(dropError);
+			displayErrors(dropError);//displays errors
 		}
 		long queryTime = endTime - startTime;
-		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));//Timing
 
 	}
 	
-	public String[] getDatabaseColumnNames(String tableName)
+	public String[] getDatabaseColumnNames(String tableName) //gets colomuns
 	{
-		String[] columns;
-		currentQuery = "SELECT * FROM `" + tableName + "`";
-		long startTime, endTime;
-		startTime = System.currentTimeMillis();
+		String[] columns; //columns are strings
+		currentQuery = "SELECT * FROM `" + tableName + "`";// gets from entered
+		long startTime, endTime; // timing info
+		startTime = System.currentTimeMillis(); //starts
 
 		try
 		{
-			Statement firstStatement = dataConnection.createStatement();
-			ResultSet answers = firstStatement.executeQuery(currentQuery);
-			ResultSetMetaData answerData = answers.getMetaData();
+			Statement firstStatement = dataConnection.createStatement();//starts connection
+			ResultSet answers = firstStatement.executeQuery(currentQuery);//gets results and executes 
+			ResultSetMetaData answerData = answers.getMetaData();//returns any answers
 
-			columns = new String[answerData.getColumnCount()];
+			columns = new String[answerData.getColumnCount()]; 
 
 			for (int column = 0; column < answerData.getColumnCount(); column++)
 			{
 				columns[column] = answerData.getColumnName(column + 1);
 			}
 
-			answers.close();
-			firstStatement.close();
-			endTime = System.currentTimeMillis();
+			answers.close();//closes answers
+			firstStatement.close();//closes statement
+			endTime = System.currentTimeMillis();//ends timing
 
 		}
-		catch (SQLException currentException)
+		catch (SQLException currentException)//checks for errors
 		{
-			endTime = System.currentTimeMillis();
-			columns = new String[] { "empty" };
-			displayErrors(currentException);
+			endTime = System.currentTimeMillis();//ends timing
+			columns = new String[] { "empty" };//displays if empty
+			displayErrors(currentException);//displays errors
 		}
 
-		long queryTime = endTime - startTime;
-		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
-		return columns;
+		long queryTime = endTime - startTime;//timing
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));//Timing
+		return columns;//returns columns
 	}
-	public ArrayList<QueryInfo> getQueryList()
+	public ArrayList<QueryInfo> getQueryList()//gets array list in queryList
 	{
-		long queryTime = endTime - startTime;
-		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
-		return getQueryList();
+		long queryTime = endTime - startTime;//timing
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));//Timing
+		return getQueryList();//returns queryList
 	}
 	
 
-	public String[] getMetaData()
+	public String[] getMetaData() //gets data
 	{
-		String[] columnInformation;
+		String[] columnInformation;//column info
 
 		try
 		{
-			Statement firstStatement = dataConnection.createStatement();
-			ResultSet answer = firstStatement.executeQuery(currentQuery);
-			ResultSetMetaData myMeta = answer.getMetaData();
+			Statement firstStatement = dataConnection.createStatement();//gets connections
+			ResultSet answer = firstStatement.executeQuery(currentQuery);//gets results
+			ResultSetMetaData myMeta = answer.getMetaData();//gets data
 
-			columnInformation = new String[myMeta.getColumnCount()];
+			columnInformation = new String[myMeta.getColumnCount()];//gets column count
 
-			for (int index = 0; index < myMeta.getColumnCount(); index++)
+			for (int index = 0; index < myMeta.getColumnCount(); index++)//checks index
 			{
-				columnInformation[index] = myMeta.getColumnName(index + 1);
+				columnInformation[index] = myMeta.getColumnName(index + 1);//index amount
 			}
 
-			answer.close();
-			firstStatement.close();
+			answer.close();//closes answers
+			firstStatement.close();//closes statement
 
 		}
-		catch (SQLException currentException)
+		catch (SQLException currentException)//checks for errors
 		{
-			columnInformation = new String[] { "nada exists" };
-			displayErrors(currentException);
+			columnInformation = new String[] { "nada exists" };//doesn't exist
+			displayErrors(currentException);//displays errors
 		}
-		long queryTime = endTime - startTime;
-		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
-		return columnInformation;
+		long queryTime = endTime - startTime;//timing
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));//Timing
+		return columnInformation;//returns column information
 	}
 
-	public String[][] realInfo()
+	public String[][] realInfo()//gets info in strings
 	{
-		long queryTime = endTime - startTime;
-		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
-		return null;
+		long queryTime = endTime - startTime;//timing
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));//Timing
+		return null;//returns nothing
 	}
 
-	public String[][] tableInfo()
+	public String[][] tableInfo()//gets table info in strings
 	{
-		long queryTime = endTime - startTime;
-		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
-		return null;
+		long queryTime = endTime - startTime;//timing
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));//Timing
+		return null;//returns nothing
 	}
 	
-	/*
-	 * Describes tables
+	/**
+	 * Describes the database tables and reports any errors
+	 * @return results
 	 */
-	public String describeTable()
+	public String describeTable()//describes table
 	{
-		String results = "";
-		String query = "DESCRIBE kwikee_marts";
+		String results = "";//starts blank
+		String query = "DESCRIBE kwikee_marts";//gets string
 		
 		try
 		{
-				Statement firstStatement = dataConnection.createStatement();
-				ResultSet answer = firstStatement.executeQuery(query);
+				Statement firstStatement = dataConnection.createStatement(); //gets connections
+				ResultSet answer = firstStatement.executeQuery(query); //executes the query
 				while(answer.next())
 				{
 					results += answer.getString(1) + "\t" + answer.getString(2) + "\t" + answer.getString(3) + "\t" + answer.getString(4) + "\n";
@@ -377,26 +381,25 @@ public class DataController
 				firstStatement.close();
 				
 		}
-		catch (SQLException currentSQLError)
+		catch (SQLException currentSQLError)//checks for errors
 		{
-			displayErrors(currentSQLError);
+			displayErrors(currentSQLError);//displays errors
 		}
 		long queryTime = endTime - startTime;
-		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));//Timing
 		
-		return results;
+		return results;//returns results
 	}
 	
-	public DataFrame getAppFrame()
+	public DataFrame getAppFrame()//gets appFrame
 	{
-		long queryTime = endTime - startTime;
-		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));
-		return getAppFrame();
+		long queryTime = endTime - startTime;//timing
+		baseController.getQueryList().add(new QueryInfo(currentQuery, queryTime));//Timing
+		return getAppFrame();//returns appFrame
 	}
 	
-
 	
-	public void choosePivot()
+	public void choosePivot()//idk
 	{
 		
 	}

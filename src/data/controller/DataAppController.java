@@ -47,114 +47,114 @@ import data.view.DataFrame;
 		
 		
 		/*
-		 * gets appframe
+		 * gets appframe, GUI
 		 */
 		public DataFrame getAppFrame()
 		{
 			return appFrame;
 		}
 
-		public void saveTimingInformation()
+		public void saveTimingInformation() //gets the timing info
 		{
 			try
 			{
-				File saveFile = new File("asdasda.save");
+				File saveFile = new File("asdasda.save"); //saves file in asdasda
 				PrintWriter writer = new PrintWriter(saveFile);
-				if(saveFile.exists())
+				if(saveFile.exists()) //checks for files existance
 				{
-					for (QueryInfo current : queryList)
+					for (QueryInfo current : queryList)  //checks query list
 					{
-						writer.println(current.getQuery());
-						writer.println(current.getQueryTime());
+						writer.println(current.getQuery()); //writes the current query
+						writer.println(current.getQueryTime());// writes the time
 					}
-					writer.close();
-					JOptionPane.showMessageDialog(getAppFrame(), queryList.size() + " QueryInfo objects were saved");
+					writer.close(); //closes file
+					JOptionPane.showMessageDialog(getAppFrame(), queryList.size() + " QueryInfo objects were saved"); //tells how many were saved
 				}
 				else
 				{
-					JOptionPane.showMessageDialog(getAppFrame(), "File not present. No QueryINfo objects saved");
+					JOptionPane.showMessageDialog(getAppFrame(), "File not present. No QueryINfo objects saved"); //if not files are saved, presents this message
 				}
 			}
-			catch(IOException currentError)
+			catch(IOException currentError) //checks for errors
 			{
-				data.displayErrors(currentError);
+				data.displayErrors(currentError); //displays errors
 			}
 			
 		}
 		
-		private void loadTimingInformation()
+		private void loadTimingInformation() //loads any previous timings
 		{
 			try
 			{
-				File loadFile = new File("asdasda.save");
-				if(loadFile.exists())
+				File loadFile = new File("asdasda.save"); //tries asdasda file
+				if(loadFile.exists()) //checks for the files existence
 				{
-					queryList.clear();
-					Scanner textScanner = new Scanner(loadFile);
-					while(textScanner.hasNext())
+					queryList.clear(); //clears list if exists
+					Scanner textScanner = new Scanner(loadFile); //scans for text
+					while(textScanner.hasNext()) //Continues through text
 					{
-						String query = textScanner.nextLine();
-						long queryTime = Long.parseLong(textScanner.nextLine());
-						queryList.add(new QueryInfo(query, queryTime));
+						String query = textScanner.nextLine(); //scans next line
+						long queryTime = Long.parseLong(textScanner.nextLine()); //gets time
+						queryList.add(new QueryInfo(query, queryTime)); //adds new query time
 					}
-					textScanner.close();
-					JOptionPane.showMessageDialog(getAppFrame(), queryList.size() + "QueryInfo obecjts were loaded");
+					textScanner.close(); //closes scanner
+					JOptionPane.showMessageDialog(getAppFrame(), queryList.size() + "QueryInfo obecjts were loaded"); //displays message
 					
 				}
 				else
 				{
-					JOptionPane.showMessageDialog(getAppFrame(), "File not present. No QueryInfo objects loaded");
+					JOptionPane.showMessageDialog(getAppFrame(), "File not present. No QueryInfo objects loaded"); //displays message
 					
 				}
 				
 			}
-			catch(IOException currentError)
+			catch(IOException currentError) //checks for errors
 			{
-				data.displayErrors(currentError);
+				data.displayErrors(currentError);// displays errors
 			}
 		}
 		
-		public void saveText(String conversation, boolean appendToEnd)
+		public void saveText(String conversation, boolean appendToEnd) //saves text to a file
 		{
-			String fileName = "/User/";
+			String fileName = "/User/"; //finds users
 			
-			PrintWriter outputWriter;
+			PrintWriter outputWriter; //prints the text
 			
-			if(appendToEnd)
+			if(appendToEnd) //checks what to append
 			{
-				try
+				try 
 				{
-					outputWriter = new PrintWriter(new BufferedWriter(new FileWriter(fileName, appendToEnd)));
-					outputWriter.append(conversation);
-					outputWriter.close();
+					outputWriter = new PrintWriter(new BufferedWriter(new FileWriter(fileName, appendToEnd))); //writer
+					outputWriter.append(conversation); //appends
+					outputWriter.close(); //closes
 				}
-				catch(FileNotFoundException noExistingFile)
+				catch(FileNotFoundException noExistingFile) //checks for exceptions
 				{
-					JOptionPane.showMessageDialog(appFrame, "There is no file here :(");
-					JOptionPane.showMessageDialog(appFrame, noExistingFile.getMessage());
+					JOptionPane.showMessageDialog(appFrame, "There is no file here :("); //displays message for no file found
+					JOptionPane.showMessageDialog(appFrame, noExistingFile.getMessage()); //gets message
 					
 				}
-				catch (IOException inputOutputError)
+				catch (IOException inputOutputError) //checks for errors
 				{
-					JOptionPane.showMessageDialog(appFrame, "There is no file here :(");
-					JOptionPane.showMessageDialog(appFrame, inputOutputError.getMessage());
+					JOptionPane.showMessageDialog(appFrame, "There is no file here :("); //displays message for errors
+					JOptionPane.showMessageDialog(appFrame, inputOutputError.getMessage()); //gets message
 	
 					
 				}
 			}
 		}
 		
-		public DataController getDatabase()
+		public DataController getDatabase() //gets data
 		{
-			return data;
+			return data;//returns data
 		}
 		
-		public ArrayList<QueryInfo> getQueryList()
+		public ArrayList<QueryInfo> getQueryList()//gets query list
 		{
-			return queryList;
+			return queryList;//returns query list
 		}
 
-		public void start()
+		public void start()//start
 		{
 			
 			
